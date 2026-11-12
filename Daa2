@@ -1,0 +1,86 @@
+#include <iostream>
+#include <queue>
+#include <string>
+#include <vector>
+using namespace std;
+
+struct Node {
+    char ch;
+    int freq;
+    Node *left, *right;
+
+    Node(char c, int f) {
+        ch = c;
+        freq = f;
+        left = right = NULL;
+    }
+};
+
+struct Compare {
+    bool operator()(Node* a, Node* b) {
+        return a->freq > b->freq;
+    }
+};
+
+void printCodes(Node* root, string code) {
+    if (root == NULL)
+        return;
+
+    if (root->left == NULL && root->right == NULL)
+        cout << root->ch << " : " << code << endl;
+
+    printCodes(root->left, code + "0");
+    printCodes(root->right, code + "1");
+}
+
+void HuffmanCodes(char data[], int freq[], int n) {
+    priority_queue<Node*, vector<Node*>, Compare> minHeap;
+
+    for (int i = 0; i < n; i++)
+        minHeap.push(new Node(data[i], freq[i]));
+
+    while (minHeap.size() > 1) {
+        Node* left = minHeap.top();
+        minHeap.pop();
+
+        Node* right = minHeap.top();
+        minHeap.pop();
+
+        Node* top = new Node('$', left->freq + right->freq);
+        top->left = left;
+        top->right = right;
+
+        minHeap.push(top);
+    }
+
+    cout << "\nHuffman Codes:\n";
+    printCodes(minHeap.top(), "");
+}
+
+int main() {
+    int n;
+
+    cout << "Enter number of characters: ";
+    cin >> n;
+
+    if (n < 2) {
+        cout << "Please enter at least 2 characters." << endl;
+        return 0;
+    }
+
+    char data[n];
+    int freq[n];
+
+    cout << "Enter characters and their frequencies:\n";
+    for (int i = 0; i < n; i++) {
+        cout << "Character " << i + 1 << ": ";
+        cin >> data[i];
+
+        cout << "Frequency of " << data[i] << ": ";
+        cin >> freq[i];
+    }
+
+    HuffmanCodes(data, freq, n);
+
+    return 0;
+}
